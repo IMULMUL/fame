@@ -178,9 +178,14 @@ class UsersView(FlaskView, UIView):
         """
         user = User(get_or_404(User.get_collection(), _id=id))
         user.update_value('enabled', False)
+
+        deletion_date = datetime.fromtimestamp(0)
         if user and 'last_activity' in user:
-            deletion_date = datetime.fromtimestamp(user['last_activity'] + 60*60*24*30).strftime("%d %B %Y")
-            flash('User was disabled and will be automatically deleted on {}'.format(deletion_date), 'danger')
+            deletion_date = datetime.fromtimestamp(user['last_activity'])
+
+        if deletion_date > datetime.now():
+            deletion_date += 60 * 60 * 24 * 30
+            flash(f'User was disabled and will be automatically deleted on {deletion_date.strftime("%d %B %Y")}', 'danger')
         else:
             flash('User was disabled and will be automatically deleted within one hour', 'danger')
 
