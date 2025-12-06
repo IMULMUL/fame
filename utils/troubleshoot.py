@@ -58,7 +58,6 @@ def mongodb():
                 authSource="fame")
             db = mongo[fame_config.mongo_db]
 
-        print(("Version: {}".format(connection.server_info()['version'])))
         print(("Authorization check: {}\n".format(test_mongodb_connection(db))))
         return True
     except Exception as e:

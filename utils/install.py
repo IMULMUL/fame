@@ -62,7 +62,7 @@ def define_mongo_connection(context):
 
     try:
         mongo = MongoClient(context['mongo_host'], context['mongo_port'], serverSelectionTimeoutMS=10000)
-        mongo.server_info()
+        mongo.admin.command('ping')
         db = mongo[context['mongo_db']]
     except Exception as e:
         print(e)
