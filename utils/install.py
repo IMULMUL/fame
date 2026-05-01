@@ -34,11 +34,9 @@ def create_conf_directory():
 
 
 def test_mongodb_connection(db):
-    from pymongo.collection import Collection
-
     try:
-        test_collection = Collection(db, "auth_check", create=True)
-        test_collection.drop()
+        db.auth_check.insert_one({"test": True})
+        db.auth_check.drop()
         return True
     except:
         return False
@@ -62,7 +60,7 @@ def define_mongo_connection(context):
 
     try:
         mongo = MongoClient(context['mongo_host'], context['mongo_port'], serverSelectionTimeoutMS=10000)
-        mongo.admin.command('ping')
+        mongo.admin.command("ping")
         db = mongo[context['mongo_db']]
     except Exception as e:
         print(e)

@@ -93,6 +93,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: NeedToBeChanged
+      GLIBC_TUNABLES: glibc.pthread.rseq=1
     volumes:
       - mongodb:/data/db
       - ./mongo-init-user.sh:/docker-entrypoint-initdb.d/mongo-init-user.sh:ro
