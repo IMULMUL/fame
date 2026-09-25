@@ -29,7 +29,7 @@ Then, you need to copy `web/auth/oidc/config/custom_mappings.py.sample` to `web/
 | Setting            | Description                                                                                                                                                                                          |
 |--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | USER_CLAIM_MAPPING | Define which claim will be used by FAME to retrieve a user email, name or role. The claims are retrieved using the `userinfo` endpoint. JSONPath can be used in this field, if you need it.          |
-| API_CLAIM_MAPPING  | Define which claim will be used by FAME to retrieve an API account email, name or role. The claims are retrieved using the `tokeninfo` endpoint. JSONPath can be used in this field, if you need it. |
+| API_CLAIM_MAPPING  | Define which claim will be used by FAME to retrieve an API account email, name or role. The claims are retrieved from the content of a provided `access_token`. JSONPath can be used in this field, if you need it. |
 | ROLE_MAPPING       | Map OpenID role(s) to FAME permissions, groups and default sharing. Note that one user may be granted multiple roles.                                                                                |
 
 These 3 settings have to be defined in accordance with your OpenID provider (Claims are not standardized across OPs).
