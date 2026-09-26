@@ -5,12 +5,12 @@ from fame.common.config import fame_config
 from urllib.parse import urljoin
 
 from web.views.helpers import prevent_csrf, user_has_groups_and_sharing, get_fame_url
+from web.views.negotiation import safe_redirect_target
 from web.auth.ad.user_management import (
     authenticate,
     LdapSettingsNotPresentException,
     LdapGenericError,
 )
-
 
 auth = Blueprint("auth", __name__, template_folder="templates")
 
@@ -50,7 +50,7 @@ def login():
             flash("Access not allowed.", "danger")
             return render_template("login-ad.html")
 
-        redir = request.args.get("next", "/")
+        redir = safe_redirect_target(request.args.get("next"))
         return redirect(urljoin(get_fame_url(), redir))
 
 

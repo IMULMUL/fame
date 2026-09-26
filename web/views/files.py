@@ -1,5 +1,5 @@
 from pymongo import DESCENDING
-from flask import make_response, request, flash, redirect, abort
+from flask import make_response, request, flash, abort
 from flask_classful import FlaskView, route
 from flask_paginate import Pagination
 from flask_login import current_user
@@ -9,7 +9,7 @@ from fame.core.store import store
 from fame.core.file import File
 from fame.core.module_dispatcher import dispatcher
 from fame.common.config import fame_config
-from web.views.negotiation import render, render_json
+from web.views.negotiation import render, render_json, redirect
 from web.views.constants import PER_PAGE
 from web.views.helpers import (
     file_download,
@@ -309,7 +309,7 @@ class FilesView(FlaskView, UIView):
         else:
             f.remove_group(group)
 
-        return redirect(request.referrer)
+        return redirect({}, request.referrer)
 
     @route("/<id>/add_group/", methods=["POST"])
     def add_group(self, id):
@@ -318,7 +318,7 @@ class FilesView(FlaskView, UIView):
 
         f.add_groups([group])
 
-        return redirect(request.referrer)
+        return redirect({}, request.referrer)
 
     @requires_permission("review")
     @route("/<id>/review", methods=["POST"])
@@ -337,7 +337,7 @@ class FilesView(FlaskView, UIView):
         else:
             f.review(None)
 
-        return redirect(request.referrer)
+        return redirect({}, request.referrer)
 
     @route("/<id>/change_type/", methods=["POST"])
     def change_type(self, id):
@@ -346,7 +346,7 @@ class FilesView(FlaskView, UIView):
 
         f.update_value("type", new_type)
 
-        return redirect(request.referrer)
+        return redirect({}, request.referrer)
 
     @route("/<id>/add_comment/", methods=["POST"])
     def add_comment(self, id):
@@ -379,4 +379,4 @@ class FilesView(FlaskView, UIView):
             else:
                 flash("Comment should not be empty", "danger")
 
-        return redirect(request.referrer)
+        return redirect({}, request.referrer)

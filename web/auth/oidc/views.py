@@ -13,6 +13,7 @@ from web.views.helpers import (
     user_if_enabled,
     get_fame_url,
 )
+from web.views.negotiation import safe_redirect_target
 from fame.common.config import fame_config
 from web.auth.oidc.user_management import (
     authenticate_user,
@@ -31,6 +32,14 @@ def login():
     check_oidc_settings_present()
     code = request.args.get("code", "")
     if code:
+        state = request.args.get("state")
+        expected_state = session.pop("oidc_state", None)
+        redir = session.pop("oidc_redirect", "/")
+        if not expected_state or state != expected_state:
+            return render_template(
+                "auth_error.html", error_description="Invalid login state."
+            )
+
         auth = (fame_config.oidc_client_id, fame_config.oidc_client_secret)
         data = {
             "grant_type": "authorization_code",
@@ -59,19 +68,23 @@ def login():
             if session.get("_flashes"):
                 session["_flashes"].clear()  # Clear any message asking to log in
 
-            redir = request.args.get("state", "/")
-            return redirect(urllib.parse.urljoin(get_fame_url(), redir))
+            return redirect(
+                urllib.parse.urljoin(get_fame_url(), safe_redirect_target(redir))
+            )
 
         except ClaimMappingError as e:
             return render_template("auth_error.html", error_description=e.msg)
     else:
+        state = uuid.uuid4().hex
+        session["oidc_state"] = state
+        session["oidc_redirect"] = safe_redirect_target(request.args.get("next"))
         args = {
             "client_id": fame_config.oidc_client_id,
             "response_type": "code",
             "scope": fame_config.oidc_requested_scopes,
             "redirect_uri": get_fame_url() + "/oidc-login",
             "nonce": uuid.uuid4().hex,
-            "state": request.args.get("next", "/"),
+            "state": state,
         }
         login_url = (
             fame_config.oidc_authorize_endpoint + "?" + urllib.parse.urlencode(args)
